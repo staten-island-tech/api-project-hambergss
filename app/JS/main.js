@@ -15,7 +15,7 @@ async function getData() {
       data.data.forEach((character) =>
         document
           .querySelector("div")
-          .insertAdjacentHTML("afterbegin", `<h1>${agent.displayName}</h1>`)
+          .insertAdjacentHTML("afterbegin", `<h1>${character.displayName}</h1>`)
       );
     }
   } catch (error) {
