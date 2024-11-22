@@ -1,9 +1,9 @@
-import "./style.css";
+import "../css/style.css";
 
 async function getData() {
   try {
     //returns a promise
-    const response = await fetch("https://genshin.jmp.blue/");
+    const response = await fetch("https://genshin.jmp.blue/characters");
     //guard clause
     if (response.status != 200) {
       throw new Error(response);
