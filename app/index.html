@@ -1,23 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dracula">
+<html lang="en" data-theme="garden">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Genshin API</title>
-    <link href="./output.css" rel="stylesheet" />
+    <title>Genshin Impact Characters</title>
   </head>
-  <body>
-    <div id="app"></div>
-    <div class="card lg:card-side bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title"></h2>
-        <p>Click the button to listen on Spotiwhy app.</p>
-        <div class="card-actions justify-end">
-          <button class="btn btn-primary">Listen</button>
-        </div>
+  <body class="bg">
+    <div class="navbar bg-base-100">
+      <div class="btn btn-ghost text-2xl font-bold flex-1">
+        <a href="">Genshin Impact Characters</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <form id="search-form">
+          <input
+            type="text"
+            placeholder="Search"
+            class="input input-bordered w-24 md:w-auto"
+            id="searchBar"
+          />
+          <button type="submit" class="btn btn-outline btn-primary">
+            Search
+          </button>
+        </form>
       </div>
     </div>
+
+    <main>
+      <section id="cards-container" class="grid grid-cols-4 p-4 gap-4">
+        <!-- Cards will be dynamically inserted here -->
+      </section>
+    </main>
+
     <script type="module" src="JS/main.js"></script>
   </body>
 </html>

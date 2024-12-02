@@ -1,36 +1,129 @@
 import "../css/style.css";
 
-async function getData() {
-  //returns a promise
-  const response = await fetch("https://genshin.jmp.blue/characters");
-  console.log(response.status);
+import "../css/style.css";
 
-  const data = await response.json();
-  console.log(data.data);
-  //this is unique to THIS API
+const DOMSelectors = {
+  container: document.getElementById("cards-container"),
+  searchBar: document.querySelector("#searchBar"),
+};
 
-  presentCharacters(data);
+const API_BASE = "https://genshin.jmp.blue/characters";
+
+async function getCharacterData(character) {
+  try {
+    const response = await fetch(`${API_BASE}/${character}`);
+    if (!response.ok)
+      throw new Error(`Failed to fetch character: ${character}`);
+    return await response.json();
+  } catch (error) {
+    alert("Character not found!");
+    return null;
+  }
 }
-getData();
 
-function presentCharacters(data) {
-  const characterListContainer = document.querySelector("character-cont");
-  characterListContainer.innerHTML = "";
+function createCard(character) {
+  return `
+    <div class="card hover:shadow-xl transition-shadow duration-300" id="${
+      character.id
+    }">
+      <figure>
+        <img
+          src="${API_BASE}/${character.id.toLowerCase()}/icon-big"
+          alt="${character.name} Icon"
+          class="card-image"
+        />
+      </figure>
+      <div class="card-body">
+        <h2 class="card-title">${character.name}</h2>
+        <p class="text-gray-600">${character.title}</p>
+        <button
+          class="btn btn-primary btn-sm"
+          data-id="${character.id.toLowerCase()}">See More</button>
+      </div>
+      <div class="card-details hidden"></div>
+    </div>`;
+}
 
-  data.data.forEach((character) => {
-    const nameText = character.name
-      .map((name) => `<p>${name.name}: ${name.scaling}</p>`)
-      .join("");
+async function expandCard(card, characterId) {
+  const detailsContainer = card.querySelector(".card-details");
+  if (!detailsContainer.classList.contains("hidden")) {
+    // Collapse the card if already expanded
+    detailsContainer.innerHTML = "";
+    detailsContainer.classList.add("hidden");
+    return;
+  }
 
-    const attackText = character.attack
-      .map((attack) => `<p>${attack.name}: ${attack.amount}</p>`)
-      .join("");
+  // Expand the card to show more details
+  const character = await getCharacterData(characterId);
+  if (character) {
+    detailsContainer.innerHTML = `
+      <p><strong>Release:</strong> ${character.release}</p>
+      <p><strong>Vision:</strong> ${character.vision}</p>
+      <p><strong>Nation:</strong> ${character.nation}</p>
+      <p><strong>Weapon:</strong> ${character.weapon}</p>
+      <p><strong>Rarity:</strong> ${character.rarity}</p>
+      <p class="mt-2">${character.description}</p>
+    `;
+    detailsContainer.classList.remove("hidden");
+  }
+}
 
-    const defenseText = character.defense
-      .map((defense) => `<p>${defense.name}: ${defense.amount}</p>`)
-      .join("");
-    
-    const characterHTML = `
-    `
+async function renderAllCharacters() {
+  const characters = await getAllCharacters();
+  DOMSelectors.container.innerHTML = "";
+  for (const character of characters) {
+    const characterData = await getCharacterData(character);
+    if (characterData) {
+      DOMSelectors.container.insertAdjacentHTML(
+        "beforeend",
+        createCard(characterData)
+      );
+    }
+  }
+}
+
+function handleMoreDetails(event) {
+  const button = event.target.closest("button");
+  if (button && button.dataset.id) {
+    const card = button.closest(".card");
+    const characterId = button.dataset.id;
+    expandCard(card, characterId);
+  }
+}
+
+function handleSearch(event) {
+  const query = event.target.value.toLowerCase();
+  DOMSelectors.container.innerHTML = "Searching...";
+  getAllCharacters().then((characters) => {
+    const filtered = characters.filter((name) => name.includes(query));
+    DOMSelectors.container.innerHTML = "";
+    for (const character of filtered) {
+      getCharacterData(character).then((data) => {
+        if (data)
+          DOMSelectors.container.insertAdjacentHTML(
+            "beforeend",
+            createCard(data)
+          );
+      });
+    }
   });
 }
+
+async function getAllCharacters() {
+  try {
+    const response = await fetch(API_BASE);
+    if (!response.ok) throw new Error("Failed to fetch character list");
+    return await response.json();
+  } catch (error) {
+    alert("Unable to load character list.");
+    return [];
+  }
+}
+
+function init() {
+  renderAllCharacters();
+  DOMSelectors.container.addEventListener("click", handleMoreDetails);
+  DOMSelectors.searchBar.addEventListener("input", handleSearch);
+}
+
+init();
