@@ -5,6 +5,9 @@ import "../css/style.css";
 const DOMSelectors = {
   container: document.getElementById("cards-container"),
   searchBar: document.querySelector("#searchBar"),
+  gameBtn: document.querySelector("#gameBtn"),
+  gameTimer: document.querySelector("#gameTimer"),
+  gameContainer: document.getElementById("game-container"),
 };
 
 const API_BASE = "https://genshin.jmp.blue/characters";
@@ -82,7 +85,7 @@ async function renderAllCharacters() {
   }
 }
 
-function handleMoreDetails(event) {
+function moreDetails(event) {
   const button = event.target.closest("button");
   if (button && button.dataset.id) {
     const card = button.closest(".card");
@@ -91,7 +94,7 @@ function handleMoreDetails(event) {
   }
 }
 
-function handleSearch(event) {
+function search(event) {
   const query = event.target.value.toLowerCase();
   DOMSelectors.container.innerHTML = "Searching...";
   getAllCharacters().then((characters) => {
@@ -120,10 +123,18 @@ async function getAllCharacters() {
   }
 }
 
+function game(event) {
+  const gameBtn = event.target("button");
+  
+}
+
 function init() {
   renderAllCharacters();
-  DOMSelectors.container.addEventListener("click", handleMoreDetails);
-  DOMSelectors.searchBar.addEventListener("input", handleSearch);
+  DOMSelectors.container.addEventListener("click", moreDetails);
+  DOMSelectors.searchBar.addEventListener("input", search);
+  DOMSelectors.gameBtn.addEventListener("click", game);
 }
+
+
 
 init();
