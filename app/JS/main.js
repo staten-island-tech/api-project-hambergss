@@ -123,11 +123,6 @@ async function getAllCharacters() {
   }
 }
 
-function game(event) {
-  const gameBtn = event.target("button");
-  
-}
-
 function init() {
   renderAllCharacters();
   DOMSelectors.container.addEventListener("click", moreDetails);
