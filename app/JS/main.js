@@ -94,22 +94,26 @@ function moreDetails(event) {
   }
 }
 
-function search(event) {
+async function search(event) {
   const query = event.target.value.toLowerCase();
-  DOMSelectors.container.innerHTML = "Searching...";
-  getAllCharacters().then((characters) => {
-    const filtered = characters.filter((name) => name.includes(query));
-    DOMSelectors.container.innerHTML = "";
-    for (const character of filtered) {
-      getCharacterData(character).then((data) => {
-        if (data)
-          DOMSelectors.container.insertAdjacentHTML(
-            "beforeend",
-            createCard(data)
-          );
-      });
+  const characters = await getAllCharacters();
+  const filtered = characters.filter((name) => name.includes(query));
+  
+  DOMSelectors.container.innerHTML = "";
+  for (let i = 0; i < filtered.length; i++) {
+    const character = filtered[i];
+    try {
+      const data = await getCharacterData(character);
+      if (data) {
+        DOMSelectors.container.insertAdjacentHTML(
+          "beforeend",
+          createCard(data)
+        );
+      }
+    } catch (error) {
+      console.error(`Error while searching for ${character}:`, error);
     }
-  });
+  }
 }
 
 async function getAllCharacters() {
@@ -129,7 +133,5 @@ function init() {
   DOMSelectors.searchBar.addEventListener("input", search);
   DOMSelectors.gameBtn.addEventListener("click", game);
 }
-
-
 
 init();
